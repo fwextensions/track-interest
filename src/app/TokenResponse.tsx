@@ -1,36 +1,42 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import ky from "ky";
 
-const payload = {
+const TokenizeURL = "/api/tokenize";
+const PayloadDefaults = {
 	n: "01349953",
 	b: 1,
-	r: "y"
 };
+const ResponseValues = ["y", "n"];
+const Payloads = ResponseValues.map((r) => ({ ...PayloadDefaults, r }));
 
 export default function TokenResponse()
 {
-  const [jwtResponse, setJwtResponse] = useState(null);
+	const [tokens, setTokens] = useState<[string, string][]>([]);
 
 	useEffect(() => {
 		(async () => {
-			const result = await fetch("/api/tokenize", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-			const res = await result.json();
+			const results = await Promise.all<{ token: string }>(Payloads.map(
+				(payload) => ky.post(TokenizeURL, { json: payload }).json()
+			));
 
-      setJwtResponse(res);
-			console.log(res, res.token.length);
+			setTokens(results.map(({ token }, i) => [ResponseValues[i], token]));
 		})();
 	}, []);
 
 	return (
-		<pre>
-			{jwtResponse && JSON.stringify(jwtResponse, null, 2)}
-		</pre>
+		<>
+			{tokens.map(([response, token]) => (
+				<Link
+					key={token}
+					href={`/api/resp/${token}`}
+					title={token}
+				>
+					Send <strong>{response}</strong> response
+				</Link>
+			))}
+		</>
 	);
 }
