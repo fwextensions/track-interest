@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import jwt from "jsonwebtoken";
+import jwt, { TokenExpiredError } from "jsonwebtoken";
 import { RespSubject } from "@/app/constants";
 import { TokenPayload } from "@/app/types";
 
@@ -23,9 +23,15 @@ export async function GET(
 
 		url = `/response/${b}/${r}`;
 	} catch (e) {
-		console.error(e);
+		const { message = "Invalid token" } = (e as Error);
 
-		return Response.json({ error: "Invalid token" }, { status: 401 });
+		console.error("====", message, token);
+
+		if (e instanceof TokenExpiredError) {
+			url = "/expired";
+		} else {
+			return Response.json({ error: message }, { status: 500 });
+		}
 	}
 
 		// for some crazy reason, this redirect() has to be outside the try/catch

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import ky from "ky";
 
 const TokenizeURL = "/api/tokenize";
@@ -29,13 +28,13 @@ export default function TokenResponse()
 	return (
 		<>
 			{tokens.map(([response, token]) => (
-				<Link
+				<a
 					key={token}
 					href={`/api/resp/${token}`}
 					title={token}
 				>
 					Send <strong>{response}</strong> response
-				</Link>
+				</a>
 			))}
 		</>
 	);

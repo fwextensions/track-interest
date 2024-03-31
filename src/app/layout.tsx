@@ -4,8 +4,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "SF Housing",
   description: "City and County of San Francisco",
-		// try to make next.js stop requesting a favicon
-	icons: null,
+	icons: ["data:;base64,iVBORw0KGgo="],
 };
 
 export default function RootLayout({
