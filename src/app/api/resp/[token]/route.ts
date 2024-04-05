@@ -21,6 +21,10 @@ export async function GET(
 
 		console.log("==== save this response to Salesforce", n, b, r);
 
+		if (!n || !b || !r) {
+			throw new Error("Invalid token: missing keys");
+		}
+
 		url = `/response/${b}/${r}`;
 	} catch (e) {
 		const { message = "Invalid token" } = (e as Error);

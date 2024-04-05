@@ -6,7 +6,7 @@ import * as XLSX from "xlsx";
 import { useDroppedFile } from "@/components/DragOverlay";
 
 type InputRow = {
-	AppID: string;
+	ApplicantID: string;
 	FirstName: string;
 	LastName: string;
 	Email: string;
@@ -41,7 +41,7 @@ export default function SpreadsheetManager()
 
 				for (const row of rows) {
 					const payload = {
-						n: row.AppID,
+						n: row.ApplicantID,
 						b: building,
 					};
 					const YesToken = (await ky.post(TokenizeURL, { json: { ...payload, r: "y" } }).json())?.token;
