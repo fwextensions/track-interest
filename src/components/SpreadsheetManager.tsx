@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import * as XLSX from "xlsx";
 import { useDroppedFile } from "@/components/DragOverlay";
 import { createTokensForApplicants } from "@/actions";
+import styles from "./SpreadsheetManager.module.css";
 
 type InputRow = {
 	FirstName: string;
@@ -26,11 +27,15 @@ function getRowsFromSpreadsheet(
 	return XLSX.utils.sheet_to_json(ws) as InputRow[];
 }
 
-export default function SpreadsheetManager()
+type Props = {
+	building?: number;
+};
+
+export default function SpreadsheetManager({
+	building = 0 }: Props)
 {
 	const fileData = useDroppedFile();
 	const [outputRows, setOutputRows] = useState<OutputRow[]>([]);
-	const building = 1;
 
 	useEffect(() => {
 		if (fileData) {
@@ -49,22 +54,27 @@ export default function SpreadsheetManager()
 		}
 	}, [fileData]);
 
-// TODO: add select for building number
+// TODO: generate the spreadsheet on drop
 
-	return outputRows.map(({ Email, YesToken, NoToken }) => ([
-		<a
-			key={YesToken}
-			href={`/api/resp/${YesToken}`}
-			title={YesToken}
-		>
-			{Email} <strong>Yes</strong> response
-		</a>,
-		<a
-			key={NoToken}
-			href={`/api/resp/${NoToken}`}
-			title={NoToken}
-		>
-			{Email} <strong>No</strong> response
-		</a>
-	]));
+	return (
+		<ul className={styles.applicantList}>
+			{outputRows.map(({ Email, YesToken, NoToken }) => (
+				<li key={Email}>
+					{Email}
+					<a
+						href={`/api/resp/${YesToken}`}
+						title={YesToken}
+					>
+						<strong>Yes</strong>
+					</a>
+					<a
+						href={`/api/resp/${NoToken}`}
+						title={NoToken}
+					>
+						<strong>No</strong>
+					</a>
+				</li>
+			))}
+		</ul>
+	);
 }

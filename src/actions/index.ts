@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 import { RespSubject, RespTime } from "@/app/constants";
 import { TokenPayload } from "@/app/types";
 
-const secret = process.env.TOKEN_SECRET || "";
-const options = {
+const Secret = process.env.TOKEN_SECRET || "";
+const Options = {
 	subject: RespSubject,
 	expiresIn: RespTime,
 };
@@ -13,7 +13,7 @@ const options = {
 function signPayload(
 	payload: TokenPayload)
 {
-	return jwt.sign(payload, secret, options);
+	return jwt.sign(payload, Secret, Options);
 }
 
 export async function createTokensForApplicants(

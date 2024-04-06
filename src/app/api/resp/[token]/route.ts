@@ -21,7 +21,7 @@ export async function GET(
 
 		console.log("==== save this response to Salesforce", n, b, r);
 
-		if (!n || !b || !r) {
+		if (!n || typeof b !== "number" || !r) {
 			throw new Error("Invalid token: missing keys");
 		}
 
