@@ -17,6 +17,8 @@ type OutputRow = InputRow & {
 	NoToken: string;
 };
 
+const OutputSheet = "Tokens";
+
 function getRowsFromSpreadsheet(
 	data: ArrayBuffer)
 {
@@ -25,6 +27,17 @@ function getRowsFromSpreadsheet(
 
 		// use the column headers as the keys for each object
 	return XLSX.utils.sheet_to_json(ws) as InputRow[];
+}
+
+function getWorkbookFromRows(
+	rows: OutputRow[])
+{
+	return {
+		SheetNames: [OutputSheet],
+		Sheets: {
+			[OutputSheet]: XLSX.utils.json_to_sheet(rows)
+		}
+	};
 }
 
 type Props = {
@@ -48,13 +61,13 @@ export default function SpreadsheetManager({
 					YesToken,
 					NoToken,
 				}));
+				const outputWorkbook = getWorkbookFromRows(outputRows);
 
 				setOutputRows(outputRows);
+				XLSX.writeFile(outputWorkbook, "tokens.xlsx");
 			})();
 		}
 	}, [fileData]);
-
-// TODO: generate the spreadsheet on drop
 
 	return (
 		<ul className={styles.applicantList}>
