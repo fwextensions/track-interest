@@ -7,11 +7,7 @@ import BuildingSelector from "@/components/BuildingSelector";
 
 export default function Home()
 {
-	const [building, setBuilding] = useState(4);
-
-	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		setBuilding(Number(event.target.value));
-	};
+	const [building, setBuilding] = useState(1);
 
 	return (
 		<DragOverlay message="Drop a spreadsheet with applicant emails and IDs here">
@@ -19,7 +15,7 @@ export default function Home()
 				<h3>Select a building:</h3>
 				<BuildingSelector
 					value={building}
-					onChange={handleChange}
+					onChange={setBuilding}
 				/>
 				<h3 style={{ marginTop: "2rem" }}>Then drop a file with applicant emails and IDs</h3>
 				<SpreadsheetManager building={building} />

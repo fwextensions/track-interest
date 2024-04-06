@@ -13,7 +13,7 @@ export default function Response(
 	const { building, response } = props.params;
 	const responseString = response === "y"
 		? "Yes, I am interested"
-		: "No longer interested";
+		: "No, I am not interested";
 	const buildingName = Buildings[building][0];
 
 	return (

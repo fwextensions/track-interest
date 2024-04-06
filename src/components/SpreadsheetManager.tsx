@@ -40,6 +40,23 @@ function getWorkbookFromRows(
 	};
 }
 
+async function getOutput(
+	fileData: ArrayBuffer,
+	building: number): Promise<[OutputRow[], XLSX.WorkBook]>
+{
+	const rows = getRowsFromSpreadsheet(fileData);
+	const applicantIDs = rows.map(({ ApplicantID }) => ApplicantID);
+	const tokens = await createTokensForApplicants(applicantIDs, building);
+	const outputRows = tokens.map(([_, YesToken, NoToken], i) => ({
+		...rows[i],
+		YesToken,
+		NoToken,
+	}));
+	const outputWorkbook = getWorkbookFromRows(outputRows);
+
+	return [outputRows, outputWorkbook];
+}
+
 type Props = {
 	building?: number;
 };
@@ -53,18 +70,10 @@ export default function SpreadsheetManager({
 	useEffect(() => {
 		if (fileData) {
 			(async () => {
-				const rows = getRowsFromSpreadsheet(fileData);
-				const applicantIDs = rows.map(({ ApplicantID }) => ApplicantID);
-				const tokens = await createTokensForApplicants(applicantIDs, building);
-				const outputRows = tokens.map(([_, YesToken, NoToken], i) => ({
-					...rows[i],
-					YesToken,
-					NoToken,
-				}));
-				const outputWorkbook = getWorkbookFromRows(outputRows);
+				const [rows, workBook] = await getOutput(fileData, building);
 
-				setOutputRows(outputRows);
-				XLSX.writeFile(outputWorkbook, "tokens.xlsx");
+				setOutputRows(rows);
+				XLSX.writeFile(workBook, "tokens.xlsx");
 			})();
 		}
 	}, [fileData]);
