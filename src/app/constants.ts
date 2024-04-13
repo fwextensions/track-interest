@@ -6,10 +6,10 @@ export const RespTime = "7d";
 export const Buildings = [
 	["Test", ""],
 	["1830 Alemany", "a0W4U00000KnLRMUA3"],
-	["South Beach Marina Apartments", "a0W4U00000KnasLUAR"],
 	["The Canyon", "a0W4U00000IYEb4UAH"],
-	["The George", "a0W4U00000KnCZRUA3"],
+	["The Fitzgerald", "a0W4U00000KnasLUAR"],	// TODO: get correct building ID
 	["Ventana Residences", "a0W4U00000Ih1V2UAJ"],
+	["The George", "a0W4U00000KnCZRUA3"],
 ];
 export const BuildingIDByNumber: Record<string, string> = Buildings.reduce((result, [_, id], i) => ({
 	...result,

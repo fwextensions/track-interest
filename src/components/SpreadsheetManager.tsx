@@ -10,14 +10,18 @@ type InputRow = {
 	FirstName: string;
 	LastName: string;
 	Email: string;
-	ApplicantID: string;
+	ApplicantID?: string;
+	APP_ID: string;
 };
 type OutputRow = InputRow & {
-	YesToken: string;
-	NoToken: string;
+	YesLink: string;
+	NoLink: string;
 };
 
 const OutputSheet = "Tokens";
+
+//const link = (token: string) => `/api/resp/${token}`;
+const link = (token: string) => `https://track-interest.vercel.app/api/resp/${token}`;
 
 function getRowsFromSpreadsheet(
 	data: ArrayBuffer)
@@ -45,12 +49,12 @@ async function getOutput(
 	building: number): Promise<[OutputRow[], XLSX.WorkBook]>
 {
 	const rows = getRowsFromSpreadsheet(fileData);
-	const applicantIDs = rows.map(({ ApplicantID }) => ApplicantID);
+	const applicantIDs = rows.map(({ ApplicantID, APP_ID }) => ApplicantID || APP_ID);
 	const tokens = await createTokensForApplicants(applicantIDs, building);
 	const outputRows = tokens.map(([_, YesToken, NoToken], i) => ({
 		...rows[i],
-		YesToken,
-		NoToken,
+		YesLink: link(YesToken),
+		NoLink: link(NoToken),
 	}));
 	const outputWorkbook = getWorkbookFromRows(outputRows);
 
@@ -70,7 +74,9 @@ export default function SpreadsheetManager({
 	useEffect(() => {
 		if (fileData) {
 			(async () => {
+console.time("getOutput");
 				const [rows, workBook] = await getOutput(fileData, building);
+console.timeEnd("getOutput");
 
 				setOutputRows(rows);
 				XLSX.writeFile(workBook, "tokens.xlsx");
@@ -80,18 +86,20 @@ export default function SpreadsheetManager({
 
 	return (
 		<ul className={styles.applicantList}>
-			{outputRows.map(({ Email, YesToken, NoToken }) => (
-				<li key={Email}>
+			{[...outputRows.slice(0, 20), ...outputRows.slice(-20)].map(({ Email, YesLink, NoLink }, i) => (
+				<li key={i}>
 					{Email}
 					<a
-						href={`/api/resp/${YesToken}`}
-						title={YesToken}
+						href={YesLink}
+						title={YesLink}
+						target="_blank"
 					>
 						<strong>Yes</strong>
 					</a>
 					<a
-						href={`/api/resp/${NoToken}`}
-						title={NoToken}
+						href={NoLink}
+						title={NoLink}
+						target="_blank"
 					>
 						<strong>No</strong>
 					</a>

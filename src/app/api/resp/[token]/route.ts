@@ -25,7 +25,7 @@ export async function GET(
 			throw new Error("Invalid token: missing keys");
 		}
 
-		url = `/response/${b}/${r}`;
+		url = `/response.html?b=${b}&r=${r}`;
 	} catch (e) {
 		const { message = "Invalid token" } = (e as Error);
 
