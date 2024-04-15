@@ -84,9 +84,15 @@ console.timeEnd("getOutput");
 		}
 	}, [fileData]);
 
+	let renderedRows = outputRows;
+
+	if (renderedRows.length > 40) {
+		renderedRows = [...outputRows.slice(0, 20), ...outputRows.slice(-20)];
+	}
+
 	return (
 		<ul className={styles.applicantList}>
-			{[...outputRows.slice(0, 20), ...outputRows.slice(-20)].map(({ Email, YesLink, NoLink }, i) => (
+			{renderedRows.map(({ Email, YesLink, NoLink }, i) => (
 				<li key={i}>
 					{Email}
 					<a
