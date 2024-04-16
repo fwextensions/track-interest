@@ -17,3 +17,22 @@
 	font-size: larger;
 	display: inline-block;
 }
+
+.pendingMessage {
+	color: #666;
+	font-size: larger;
+	margin-top: 1rem;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

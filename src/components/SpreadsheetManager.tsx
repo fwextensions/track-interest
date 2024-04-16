@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useTransition } from "react";
 import * as XLSX from "xlsx";
 import { useDroppedFile } from "@/components/DragOverlay";
 import { createTokensForApplicants } from "@/actions";
@@ -77,17 +77,22 @@ export default function SpreadsheetManager({
 {
 	const fileData = useDroppedFile();
 	const [outputRows, setOutputRows] = useState<OutputRow[]>([]);
-	let renderedRows = outputRows;
+	const [isPending, startTransition] = useTransition();
+	let renderedRows = isPending ? [] : outputRows;
 
 	useEffect(() => {
 		if (fileData) {
-			(async () => {
+			startTransition(async () => {
 				const rows = await getOutput(fileData, building);
 
 				setOutputRows(rows);
-			})();
+			});
 		}
 	}, [fileData]);
+
+	if (isPending) {
+		return <div className={styles.pendingMessage}>Generating tokens...</div>;
+	}
 
 	if (renderedRows.length > 40) {
 		renderedRows = [...outputRows.slice(0, 20), ...outputRows.slice(-20)];
