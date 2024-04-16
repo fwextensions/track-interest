@@ -46,7 +46,7 @@ function getWorkbookFromRows(
 
 async function getOutput(
 	fileData: ArrayBuffer,
-	building: number): Promise<[OutputRow[], XLSX.WorkBook]>
+	building: number)
 {
 	const rows = getRowsFromSpreadsheet(fileData);
 	const applicantIDs = rows.map(({ ApplicantID, APP_ID }) => ApplicantID || APP_ID);
@@ -56,9 +56,16 @@ async function getOutput(
 		YesLink: link(YesToken),
 		NoLink: link(NoToken),
 	}));
-	const outputWorkbook = getWorkbookFromRows(outputRows);
 
-	return [outputRows, outputWorkbook];
+	return outputRows;
+}
+
+function writeWorkbookFromRows(
+	rows: OutputRow[])
+{
+	const workbook = getWorkbookFromRows(rows);
+
+	XLSX.writeFile(workbook, "tokens.xlsx");
 }
 
 type Props = {
@@ -70,47 +77,52 @@ export default function SpreadsheetManager({
 {
 	const fileData = useDroppedFile();
 	const [outputRows, setOutputRows] = useState<OutputRow[]>([]);
+	let renderedRows = outputRows;
 
 	useEffect(() => {
 		if (fileData) {
 			(async () => {
-console.time("getOutput");
-				const [rows, workBook] = await getOutput(fileData, building);
-console.timeEnd("getOutput");
+				const rows = await getOutput(fileData, building);
 
 				setOutputRows(rows);
-				XLSX.writeFile(workBook, "tokens.xlsx");
 			})();
 		}
 	}, [fileData]);
-
-	let renderedRows = outputRows;
 
 	if (renderedRows.length > 40) {
 		renderedRows = [...outputRows.slice(0, 20), ...outputRows.slice(-20)];
 	}
 
 	return (
-		<ul className={styles.applicantList}>
-			{renderedRows.map(({ Email, YesLink, NoLink }, i) => (
-				<li key={i}>
-					{Email}
-					<a
-						href={YesLink}
-						title={YesLink}
-						target="_blank"
-					>
-						<strong>Yes</strong>
-					</a>
-					<a
-						href={NoLink}
-						title={NoLink}
-						target="_blank"
-					>
-						<strong>No</strong>
-					</a>
-				</li>
-			))}
-		</ul>
+		<>
+			{!!outputRows.length &&
+				<button
+					className={styles.downloadButton}
+					onClick={() => writeWorkbookFromRows(outputRows)}
+				>
+					Download Tokens
+				</button>}
+			<ul className={styles.applicantList}>
+				{renderedRows.map(({ Email, YesLink, NoLink }, i) => (
+					<li key={i}>
+						{Email}
+						<a
+							href={YesLink}
+							title={YesLink}
+							target="_blank"
+						>
+							<strong>Yes</strong>
+						</a>
+						<a
+							href={NoLink}
+							title={NoLink}
+							target="_blank"
+						>
+							<strong>No</strong>
+						</a>
+					</li>
+				))}
+			</ul>
+		</>
 	);
 }

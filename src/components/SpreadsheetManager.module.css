@@ -10,3 +10,10 @@
 	gap: 1rem;
 	margin-bottom: .75rem;
 }
+
+.downloadButton {
+	width: fit-content;
+	padding: .5rem .75rem;
+	font-size: larger;
+	display: inline-block;
+}
