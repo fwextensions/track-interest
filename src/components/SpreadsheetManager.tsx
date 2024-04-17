@@ -45,9 +45,10 @@ function getWorkbookFromRows(
 }
 
 async function getOutput(
-	fileData: ArrayBuffer,
+	file: File,
 	building: number)
 {
+	const fileData = await file.arrayBuffer();
 	const rows = getRowsFromSpreadsheet(fileData);
 	const applicantIDs = rows.map(({ ApplicantID, APP_ID }) => ApplicantID || APP_ID);
 	const tokens = await createTokensForApplicants(applicantIDs, building);
@@ -61,11 +62,14 @@ async function getOutput(
 }
 
 function writeWorkbookFromRows(
-	rows: OutputRow[])
+	rows: OutputRow[],
+	filename: string = "Output")
 {
 	const workbook = getWorkbookFromRows(rows);
+	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+	const outputFilename = `${filename.replace(/\.[^.]*$/, "")} - tokens ${timestamp}.xlsx`;
 
-	XLSX.writeFile(workbook, "tokens.xlsx");
+	XLSX.writeFile(workbook, outputFilename);
 }
 
 type Props = {
@@ -75,20 +79,26 @@ type Props = {
 export default function SpreadsheetManager({
 	building = 0 }: Props)
 {
-	const fileData = useDroppedFile();
+	const file = useDroppedFile();
 	const [outputRows, setOutputRows] = useState<OutputRow[]>([]);
 	const [isPending, startTransition] = useTransition();
 	let renderedRows = isPending ? [] : outputRows;
 
+	const handleClick = () => {
+		if (file && outputRows.length) {
+			writeWorkbookFromRows(outputRows, file.name);
+		}
+	};
+
 	useEffect(() => {
-		if (fileData) {
+		if (file) {
 			startTransition(async () => {
-				const rows = await getOutput(fileData, building);
+				const rows = await getOutput(file, building);
 
 				setOutputRows(rows);
 			});
 		}
-	}, [fileData]);
+	}, [file]);
 
 	if (isPending) {
 		return <div className={styles.pendingMessage}>Generating tokens...</div>;
@@ -103,7 +113,7 @@ export default function SpreadsheetManager({
 			{!!outputRows.length &&
 				<button
 					className={styles.downloadButton}
-					onClick={() => writeWorkbookFromRows(outputRows)}
+					onClick={handleClick}
 				>
 					Download Tokens
 				</button>}

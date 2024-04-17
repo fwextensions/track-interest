@@ -19,12 +19,14 @@ export async function GET(
 		const decoded = jwt.verify(token, secret, options) as TokenPayload;
 		const { n, b, r } = decoded;
 
-		if (request.method === "GET") {
-			console.log("=== save this response to Salesforce", n, b, r);
-		}
-
 		if (!n || typeof b !== "number" || !r) {
 			throw new Error("Invalid token: missing keys");
+		}
+
+			// apparently, HEAD requests are also sent to this handler, so we only want
+			// to hit Salesforce if the request is a GET
+		if (request.method === "GET") {
+			console.log("=== save this response to Salesforce", n, b, r);
 		}
 
 		url = `/response.html?b=${b}&r=${r}`;

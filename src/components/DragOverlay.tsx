@@ -4,7 +4,7 @@ import type { DragEvent } from "react";
 import React, { createContext, useContext, useState } from "react";
 import styles from "./DragOverlay.module.css";
 
-const DroppedFileContext = createContext<ArrayBuffer | null>(null);
+const DroppedFileContext = createContext<File | undefined>(undefined);
 
 export function useDroppedFile()
 {
@@ -47,7 +47,7 @@ export default function DragOverlay({
 	children }: Props)
 {
 	const [showDropTarget, setShowDropTarget] = useState(false);
-	const [fileData, setFileData] = useState<ArrayBuffer | null>(null);
+	const [file, setFile] = useState<File | undefined>();
 
 	const handleDragEnter = (event: DragEvent<HTMLDivElement>) => {
 			// don't show the drop target if the user is not dragging a file
@@ -67,10 +67,7 @@ export default function DragOverlay({
 		setShowDropTarget(false);
 
 		if (event.dataTransfer.types.includes("Files")) {
-			const [file] = event.dataTransfer.files;
-			const data = await file.arrayBuffer();
-
-			setFileData(data);
+			setFile(event.dataTransfer.files[0]);
 		}
 	};
 
@@ -79,7 +76,7 @@ export default function DragOverlay({
 			className={styles.dropContainer}
 			onDragEnter={handleDragEnter}
 		>
-			<DroppedFileContext.Provider value={fileData}>
+			<DroppedFileContext.Provider value={file}>
 				{children}
 			</DroppedFileContext.Provider>
 			{showDropTarget &&
