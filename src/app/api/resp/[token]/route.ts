@@ -19,7 +19,9 @@ export async function GET(
 		const decoded = jwt.verify(token, secret, options) as TokenPayload;
 		const { n, b, r } = decoded;
 
-		console.log("==== save this response to Salesforce", n, b, r);
+		if (request.method === "GET") {
+			console.log("=== save this response to Salesforce", n, b, r);
+		}
 
 		if (!n || typeof b !== "number" || !r) {
 			throw new Error("Invalid token: missing keys");
@@ -29,7 +31,7 @@ export async function GET(
 	} catch (e) {
 		const { message = "Invalid token" } = (e as Error);
 
-		console.error("====", message, token);
+		console.error("===", message, token);
 
 		if (e instanceof TokenExpiredError) {
 			url = "/expired";
