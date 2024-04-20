@@ -54,9 +54,9 @@ export default function SpreadsheetManager({
 					Download Tokens
 				</button>}
 			<ul className={styles.applicantList}>
-				{renderedRows.map(({ APPMEM_EMAIL, Building, YesLink, NoLink }, i) => (
+				{renderedRows.map(({ APPMEM_EMAIL, LISTING_NAME, Building, YesLink, NoLink }, i) => (
 					<li key={i}>
-						{APPMEM_EMAIL} - {Building}
+						{APPMEM_EMAIL} <strong title={LISTING_NAME}>bldg: {Building}</strong>
 						<a
 							href={YesLink}
 							title={YesLink}
