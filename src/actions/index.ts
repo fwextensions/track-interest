@@ -1,12 +1,11 @@
 "use server";
 
 import jwt from "jsonwebtoken";
-import { RespSubject, RespTime } from "@/app/constants";
+import { RespTime } from "@/app/constants";
 import { TokenPayload } from "@/app/types";
 
 const Secret = process.env.TOKEN_SECRET || "";
 const Options = {
-	subject: RespSubject,
 	expiresIn: RespTime,
 };
 
@@ -16,18 +15,20 @@ function signPayload(
 	return jwt.sign(payload, Secret, Options);
 }
 
-export async function createTokensForApplicants(
-	applicantIDs: string[],
+export async function createTokensForApplications(
+	applicationIDs: string[],
+	date: string = new Date().toISOString().split("T")[0],
 	building: number)
 {
-	return applicantIDs.map((applicantID) => {
+	return applicationIDs.map((applicationID) => {
 		const payload = {
-			n: applicantID,
+			a: applicationID,
 			b: building,
+			s: date,
 		};
 
 		return [
-			applicantID,
+			applicationID,
 			signPayload({ ...payload, r: "y" }),
 			signPayload({ ...payload, r: "n" }),
 		];

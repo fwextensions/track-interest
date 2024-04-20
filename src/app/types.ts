@@ -1,5 +1,6 @@
 export type TokenPayload = {
-	n: string;
+	a: string;
 	b: number;
 	r: string;
+	s: string;
 };

@@ -158,11 +158,21 @@
 								<p class="t-small ">
 									You answered: <strong><span id="response"></span></strong>.
 								</p>
-<!--
-							<div class="dash-card-inner inset border-bottom">
-							</div>
--->
 							</footer>
+							<div id="what-to-expect" class="padding--2x inset text-left" style="background: #F5F8F9; display: none;">
+								<p><strong>What to expect</strong></p>
+								<ol>
+									<li>
+										Other applicants may be ahead of you in line.
+									</li>
+									<li>
+										This means you might not get contacted about moving forward with your application.
+									</li>
+								</ol>
+								<p>
+									<a href="https://www.sf.gov/after-rental-housing-lottery">Learn more about what happens after the housing lottery.</a>
+								</p>
+							</div>
 						</form>
 					</div>
 				</section>
@@ -470,19 +480,25 @@
 		["Test", ""],
 		["1830 Alemany", "a0W4U00000KnLRMUA3"],
 		["The Canyon", "a0W4U00000IYEb4UAH"],
-		["The Fitzgerald", "a0W4U00000KnasLUAR"],	// TODO: get correct building ID
+		["The Fitzgerald", "a0W4U00000IYSM4UAP"],
 		["Ventana Residences", "a0W4U00000Ih1V2UAJ"],
 		["The George", "a0W4U00000KnCZRUA3"],
 	];
 	const buildingEl = document.getElementById("building-name");
 	const responseEl = document.getElementById("response");
+	const whatToExpectEl = document.getElementById("what-to-expect");
 	const params = Object.fromEntries(new URLSearchParams(location.search));
+	const isYes = params.r === "y";
 
 	if (buildingEl && responseEl) {
 		buildingEl.innerText = Buildings[params.b][0];
-		responseEl.innerText = params.r === "y"
+		responseEl.innerText = isYes
 			? "Yes, I'm still interested"
 			: "No, withdraw my application";
+
+		if (isYes) {
+			whatToExpectEl.style.display = "block";
+		}
 	}
 </script>
 

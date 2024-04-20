@@ -1,12 +1,9 @@
 import { redirect } from "next/navigation";
 import jwt, { TokenExpiredError } from "jsonwebtoken";
-import { RespSubject } from "@/app/constants";
+import { BuildingIDByNumber } from "@/app/constants";
 import { TokenPayload } from "@/app/types";
 
 const secret = process.env.TOKEN_SECRET || "";
-const options = {
-	subject: RespSubject,
-};
 
 export async function GET(
 	request: Request,
@@ -16,17 +13,17 @@ export async function GET(
 	let url;
 
 	try {
-		const decoded = jwt.verify(token, secret, options) as TokenPayload;
-		const { n, b, r } = decoded;
+		const decoded = jwt.verify(token, secret) as TokenPayload;
+		const { b, a, r, s } = decoded;
 
-		if (!n || typeof b !== "number" || !r) {
+		if (!a || !(b in BuildingIDByNumber) || !r || !s) {
 			throw new Error("Invalid token: missing keys");
 		}
 
 			// apparently, HEAD requests are also sent to this handler, so we only want
 			// to hit Salesforce if the request is a GET
 		if (request.method === "GET") {
-			console.log("=== save this response to Salesforce", n, b, r);
+			console.log("=== save this response to Salesforce", a, b, r, s);
 		}
 
 		url = `/response.html?b=${b}&r=${r}`;
