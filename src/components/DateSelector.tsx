@@ -1,10 +1,10 @@
 type Props = {
-	value: string;
+	defaultValue: string;
 	onChange: (date: string) => void;
 };
 
 export default function DateSelector({
-	value,
+	defaultValue,
 	onChange }: Props)
 {
 	const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -15,8 +15,8 @@ export default function DateSelector({
 		<>
 			<h3>Select a send date:</h3>
 			<input type="date"
-				value={value}
-				onChange={handleChange}
+				defaultValue={defaultValue}
+				onBlur={handleChange}
 			/>
 		</>
 	);

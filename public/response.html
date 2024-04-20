@@ -150,7 +150,7 @@
 							<header class="dash-header">
 								<h1 id="building-name" class="dash-title no-margin header-badge t-caps">The Canyon</h1>
 								<p class="padding-top--2x">
-									<a href="https://housing.sfgov.org/listings/a0W4U00000IYEb4UAH">Go to building details</a>
+									<a id="building-link" href="">Go to building details</a>
 								</p>
 							</header>
 							<footer class=dash-header>
@@ -486,15 +486,18 @@
 	];
 	const buildingEl = document.getElementById("building-name");
 	const responseEl = document.getElementById("response");
+	const buildingLinkEl = document.getElementById("building-link");
 	const whatToExpectEl = document.getElementById("what-to-expect");
 	const params = Object.fromEntries(new URLSearchParams(location.search));
 	const isYes = params.r === "y";
+	const [buildingName, buildingID] = Buildings[params.b];
 
 	if (buildingEl && responseEl) {
-		buildingEl.innerText = Buildings[params.b][0];
+		buildingEl.innerText = buildingName;
 		responseEl.innerText = isYes
 			? "Yes, I'm still interested"
 			: "No, withdraw my application";
+		buildingLinkEl.href = "https://housing.sfgov.org/listings/" + buildingID;
 
 		if (isYes) {
 			whatToExpectEl.style.display = "block";

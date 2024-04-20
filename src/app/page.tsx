@@ -22,7 +22,7 @@ export default function Home()
 		<DragOverlay message="Drop a spreadsheet with applicant emails and IDs here">
 			<main>
 				<DateSelector
-					value={sendDate}
+					defaultValue={sendDate}
 					onChange={setSendDate}
 				/>
 				<SpreadsheetManager
