@@ -1,5 +1,6 @@
 import { createTokensForApplications } from "@/actions";
 import * as XLSX from "xlsx";
+import { BuildingNumberByName } from "@/app/constants";
 
 type InputRow = {
 	APPMEM_FIRST_NAME: string;
@@ -10,6 +11,7 @@ type InputRow = {
 	LISTING_NAME: string;
 };
 export type OutputRow = InputRow & {
+	Building: number;
 	YesLink: string;
 	NoLink: string;
 };
@@ -57,31 +59,35 @@ function getWorkbookFromRows(
 
 export async function getOutputFromSpreadsheet(
 	file: File,
-	sentDate: string,
-	building: number)
+	sentDate: string)
 {
 	const fileData = await file.arrayBuffer();
 	const rows = getRowsFromSpreadsheet(fileData)
 		.map((row) => InputColNames.reduce((o, k) => ({ ...o, [k]: row[k] }), {} as InputRow));
-	const applicationIDs = rows.map(({ APP_ID }) => APP_ID);
-// TODO: specify building uniquely for each APP_ID
-	const tokens = await createTokensForApplications(applicationIDs, sentDate, building);
-	const outputRows = tokens.map(([_, YesToken, NoToken], i) => ({
+	const applications = rows.map(({ APP_ID, LISTING_NAME }): [string, number] => {
+		const building = BuildingNumberByName[LISTING_NAME];
+
+		return [APP_ID, building];
+	});
+	const tokens = await createTokensForApplications(applications, sentDate);
+
+	return tokens.map(([[_, building], YesToken, NoToken], i) => ({
 		...rows[i],
+		Building: building,
 		YesLink: link(YesToken),
 		NoLink: link(NoToken),
 	}));
-
-	return outputRows;
 }
 
 export function writeWorkbookFromRows(
 	rows: OutputRow[],
+	sentDate: string,
 	filename: string = "Output")
 {
 	const workbook = getWorkbookFromRows(rows);
 	const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-	const outputFilename = `${filename.replace(/\.[^.]*$/, "")} - tokens ${timestamp}.xlsx`;
+	const filenameOnly = filename.replace(/\.[^.]*$/, "");
+	const outputFilename = `${filenameOnly} - sent ${sentDate} - tokens ${timestamp}.xlsx`;
 
 	XLSX.writeFile(workbook, outputFilename);
 }

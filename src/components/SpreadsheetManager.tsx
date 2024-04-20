@@ -8,13 +8,11 @@ import {
 } from "@/data/spreadsheet";
 
 type Props = {
-	building?: number;
 	sentDate: string;
 };
 
 export default function SpreadsheetManager({
-	sentDate,
-	building = 0 }: Props)
+	sentDate }: Props)
 {
 	const file = useDroppedFile();
 	const [outputRows, setOutputRows] = useState<OutputRow[]>([]);
@@ -23,19 +21,19 @@ export default function SpreadsheetManager({
 
 	const handleClick = () => {
 		if (file && outputRows.length) {
-			writeWorkbookFromRows(outputRows, file.name);
+			writeWorkbookFromRows(outputRows, sentDate, file.name);
 		}
 	};
 
 	useEffect(() => {
 		if (file) {
 			startTransition(async () => {
-				const rows = await getOutputFromSpreadsheet(file, sentDate, building);
+				const rows = await getOutputFromSpreadsheet(file, sentDate);
 
 				setOutputRows(rows);
 			});
 		}
-	}, [file]);
+	}, [file, sentDate]);
 
 	if (isPending) {
 		return <div className={styles.pendingMessage}>Generating tokens...</div>;
@@ -56,9 +54,9 @@ export default function SpreadsheetManager({
 					Download Tokens
 				</button>}
 			<ul className={styles.applicantList}>
-				{renderedRows.map(({ APPMEM_EMAIL, YesLink, NoLink }, i) => (
+				{renderedRows.map(({ APPMEM_EMAIL, Building, YesLink, NoLink }, i) => (
 					<li key={i}>
-						{APPMEM_EMAIL}
+						{APPMEM_EMAIL} - {Building}
 						<a
 							href={YesLink}
 							title={YesLink}

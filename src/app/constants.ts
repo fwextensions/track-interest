@@ -11,7 +11,7 @@ export const Buildings = [
 	["Ventana Residences", "a0W4U00000Ih1V2UAJ"],
 	["The George", "a0W4U00000KnCZRUA3"],
 ];
-export const BuildingNumberByName: Record<string, string> = Buildings.reduce((result, [name], i) => ({
+export const BuildingNumberByName: Record<string, number> = Buildings.reduce((result, [name], i) => ({
 	...result,
 	[name]: i,
 }), {});

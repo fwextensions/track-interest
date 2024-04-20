@@ -16,11 +16,10 @@ function signPayload(
 }
 
 export async function createTokensForApplications(
-	applicationIDs: string[],
-	date: string = new Date().toISOString().split("T")[0],
-	building: number)
+	applications: [string, number][],
+	date: string): Promise<[[string, number], string, string][]>
 {
-	return applicationIDs.map((applicationID) => {
+	return applications.map(([applicationID, building]) => {
 		const payload = {
 			a: applicationID,
 			b: building,
@@ -28,7 +27,7 @@ export async function createTokensForApplications(
 		};
 
 		return [
-			applicationID,
+			[applicationID, building],
 			signPayload({ ...payload, r: "y" }),
 			signPayload({ ...payload, r: "n" }),
 		];
