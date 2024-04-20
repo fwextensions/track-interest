@@ -24,8 +24,15 @@ const InputColNames: Extract<keyof InputRow, string>[] = [
 ];
 const OutputSheet = "Tokens";
 
-//const link = (token: string) => `/api/resp/${token}`;
-const link = (token: string) => `https://track-interest.vercel.app/api/resp/${token}`;
+function link(
+	token: string)
+{
+	const basePath = process.env.NODE_ENV === "development"
+		? ""
+		: "https://track-interest.vercel.app";
+
+	return `${basePath}/api/resp/${token}`;
+}
 
 function getRowsFromSpreadsheet(
 	data: ArrayBuffer)

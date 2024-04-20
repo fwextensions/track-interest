@@ -1,5 +1,3 @@
-"use client";
-
 import { Buildings } from "@/app/constants";
 
 type Props = {
@@ -16,18 +14,21 @@ export default function BuildingSelector({
 	};
 
 	return (
-		<select
-			value={value}
-			onChange={handleChange}
-		>
-			{Buildings.map(([name, value], i) => (
-				<option
-					key={value}
-					value={i}
+		<>
+			<h3>Select a building:</h3>
+			<select
+				value={value}
+				onChange={handleChange}
 				>
-					{i} - {name}
-				</option>
-			))}
-		</select>
+					{Buildings.map(([name, value], i) => (
+						<option
+							key={value}
+							value={i}
+						>
+							{i} - {name}
+						</option>
+					))}
+				</select>
+		</>
 	);
 }

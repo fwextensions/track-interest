@@ -25,13 +25,21 @@ main {
 	gap: 1rem;
 }
 
+h3 {
+	margin-top: 2rem;
+}
+
+h3:first-of-type {
+	margin-top: initial;
+}
+
 pre {
   word-break: break-all;
   white-space: pre-wrap;
 	font-family: var(--font-mono);
 }
 
-select {
+select, input[type="date"] {
 	font-size: larger;
 	padding: .5em;
 	width: fit-content;

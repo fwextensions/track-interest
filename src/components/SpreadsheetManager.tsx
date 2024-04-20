@@ -1,5 +1,3 @@
-"use client";
-
 import { useEffect, useState, useTransition } from "react";
 import { useDroppedFile } from "@/components/DragOverlay";
 import styles from "./SpreadsheetManager.module.css";
@@ -11,9 +9,11 @@ import {
 
 type Props = {
 	building?: number;
+	sentDate: string;
 };
 
 export default function SpreadsheetManager({
+	sentDate,
 	building = 0 }: Props)
 {
 	const file = useDroppedFile();
@@ -29,8 +29,6 @@ export default function SpreadsheetManager({
 
 	useEffect(() => {
 		if (file) {
-			const sentDate = new Date().toISOString().split("T")[0];
-
 			startTransition(async () => {
 				const rows = await getOutputFromSpreadsheet(file, sentDate, building);
 
@@ -49,6 +47,7 @@ export default function SpreadsheetManager({
 
 	return (
 		<>
+			<h3>Then drop a file with applicant emails and IDs:</h3>
 			{!!outputRows.length &&
 				<button
 					className={styles.downloadButton}
