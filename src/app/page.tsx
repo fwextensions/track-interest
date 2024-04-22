@@ -7,7 +7,7 @@ import DateSelector from "@/components/DateSelector";
 
 export default function Home()
 {
-		// convert the current date to YYYY-MM-DD
+		// convert the current date to YYYY-MM-DD, which fr-CA returns
 	const [sendDate, setSendDate] = useState(new Date().toLocaleDateString("fr-CA"));
 
 	return (

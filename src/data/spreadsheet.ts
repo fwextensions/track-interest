@@ -29,11 +29,7 @@ const OutputSheet = "Tokens";
 function link(
 	token: string)
 {
-	const basePath = process.env.NODE_ENV === "development"
-		? ""
-		: "https://track-interest.vercel.app";
-
-	return `${basePath}/api/resp/${token}`;
+	return `https://housing.sfgov.org/api/v1/email_confirmation?token=${token}`;
 }
 
 function getRowsFromSpreadsheet(
