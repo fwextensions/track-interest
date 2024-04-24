@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "date-fns": "^3.6.0",
     "jsonwebtoken": "^9.0.2",
     "ky": "^1.2.3",
     "next": "14.2.2",

@@ -2,6 +2,14 @@ export const RespSubject = "resp";
 	// the applicant is supposed to respond within 5 days, but leave some wiggle
 	// room of a day or two to send the emails after the tokens are generated
 export const RespTime = "7d";
+	// the sent date starts at the beginning of the day, but we won't send the
+	// email until sometime later that day, and we want to give the recipient 5
+	// whole days to respond.  adding 6 days wraps to midnight on the next day,
+	// which is too much.  so add 1 hour to get to the beginning of the 6th day.
+export const DueDateOffset = { days: 5, hours: 1 };
+	// make the token expiration date 7 full days from the sent date, just before
+	// midnight, to give the applicant some wiggle room
+export const ExpDateOffset = { days: 7, hours: 23, minutes: 59 };
 
 export const Buildings = [
 	["Test", ""],

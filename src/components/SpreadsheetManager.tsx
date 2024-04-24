@@ -9,10 +9,14 @@ import {
 
 type Props = {
 	sentDate: string;
+	dueDate: string;
+	expDate: number;
 };
 
 export default function SpreadsheetManager({
-	sentDate }: Props)
+	sentDate,
+	dueDate,
+	expDate }: Props)
 {
 	const file = useDroppedFile();
 	const [outputRows, setOutputRows] = useState<OutputRow[]>([]);
@@ -28,7 +32,7 @@ export default function SpreadsheetManager({
 	useEffect(() => {
 		if (file) {
 			startTransition(async () => {
-				const rows = await getOutputFromSpreadsheet(file, sentDate);
+				const rows = await getOutputFromSpreadsheet(file, sentDate, dueDate, expDate);
 
 				setOutputRows(rows);
 			});

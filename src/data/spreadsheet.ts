@@ -1,5 +1,5 @@
-import { createTokensForApplications } from "@/actions";
 import * as XLSX from "xlsx";
+import { createTokensForApplications } from "@/actions";
 import { BuildingNumberByName } from "@/app/constants";
 
 type InputRow = {
@@ -11,6 +11,8 @@ type InputRow = {
 	LISTING_NAME: string;
 };
 export type OutputRow = InputRow & {
+	Name: string;
+	DueDate: string;
 	Building: number;
 	YesLink: string;
 	NoLink: string;
@@ -25,11 +27,12 @@ const InputColNames: Extract<keyof InputRow, string>[] = [
 	"LISTING_NAME"
 ];
 const OutputSheet = "Tokens";
+const DuplicateSpacesPattern = /\s+/g;
 
 function link(
 	token: string)
 {
-	return `https://housing.sfgov.org/api/v1/email_confirmation?token=${token}`;
+	return `https://housing.sfgov.org/api/v1/trk?t=${token}`;
 }
 
 function getRowsFromSpreadsheet(
@@ -55,9 +58,12 @@ function getWorkbookFromRows(
 
 export async function getOutputFromSpreadsheet(
 	file: File,
-	sentDate: string)
+	sentDate: string,
+	dueDate: string,
+	expDate: number)
 {
 	const fileData = await file.arrayBuffer();
+		// create new row objects with only keys that are in InputRow
 	const rows = getRowsFromSpreadsheet(fileData)
 		.map((row) => InputColNames.reduce((o, k) => ({ ...o, [k]: row[k] }), {} as InputRow));
 	const applications = rows.map(({ APP_ID, LISTING_NAME }): [string, number] => {
@@ -65,14 +71,21 @@ export async function getOutputFromSpreadsheet(
 
 		return [APP_ID, building];
 	});
-	const tokens = await createTokensForApplications(applications, sentDate);
+	const tokens = await createTokensForApplications(applications, sentDate, expDate);
 
-	return tokens.map(([[_, building], YesToken, NoToken], i) => ({
-		...rows[i],
-		Building: building,
-		YesLink: link(YesToken),
-		NoLink: link(NoToken),
-	}));
+	return tokens.map(([[_, building], YesToken, NoToken], i) => {
+		const row = rows[i];
+		const Name = (row.APPMEM_FIRST_NAME + " " + row.APPMEM_LAST_NAME).replace(DuplicateSpacesPattern, " ");
+
+		return {
+			...row,
+			Name,
+			DueDate: dueDate,
+			Building: building,
+			YesLink: link(YesToken),
+			NoLink: link(NoToken),
+		};
+	});
 }
 
 export function writeWorkbookFromRows(

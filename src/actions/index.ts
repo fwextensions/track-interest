@@ -1,26 +1,22 @@
 "use server";
 
 import jwt from "jsonwebtoken";
-import { RespTime } from "@/app/constants";
 import { TokenPayload } from "@/app/types";
 
 const Secret = process.env.TOKEN_SECRET || "";
-const Options = {
-	expiresIn: RespTime,
-};
 
-function signPayload(
-	payload: TokenPayload)
-{
-	return jwt.sign(payload, Secret, Options);
-}
+const signPayload = (payload: TokenPayload) => jwt.sign(payload, Secret);
 
 export async function createTokensForApplications(
 	applications: [string, number][],
-	date: string): Promise<[[string, number], string, string][]>
+	date: string,
+	exp: number): Promise<[[string, number], string, string][]>
 {
 	return applications.map(([applicationID, building]) => {
+			// supply an expiration time in seconds on the payload itself, rather than
+			// using the options object
 		const payload = {
+			exp,
 			a: applicationID,
 			b: building,
 			s: date,
