@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "remove-responded": "node cli/remove-responded.js"
   },
   "dependencies": {
     "date-fns": "^3.6.0",
@@ -22,6 +23,7 @@
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
+    "minimist": "^1.2.8",
     "typescript": "^5"
   }
 }
