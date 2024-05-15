@@ -7,9 +7,9 @@ export const RespTime = "7d";
 	// whole days to respond.  adding 6 days wraps to midnight on the next day,
 	// which is too much.  so add 1 hour to get to the beginning of the 6th day.
 export const DueDateOffset = { days: 5, hours: 1 };
-	// make the token expiration date 7 full days from the sent date, just before
+	// make the token expiration date 6 full days from the sent date, just before
 	// midnight, to give the applicant some wiggle room
-export const ExpDateOffset = { days: 7, hours: 23, minutes: 59 };
+export const ExpDateOffset = { days: 6, hours: 23, minutes: 59 };
 
 export const Buildings = [
 	["Test", ""],
