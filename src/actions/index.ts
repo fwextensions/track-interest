@@ -17,9 +17,15 @@ export async function createTokensForApplications(
 			// using the options object
 		const payload = {
 			exp,
-			a: applicationID,
-			b: building,
+//			a: applicationID,
+//			b: building,
 			s: date,
+			m: Object.fromEntries([
+				[6, applicationID],
+				[7, applicationID],
+				[8, applicationID],
+				[9, applicationID],
+			])
 		};
 
 		return [
