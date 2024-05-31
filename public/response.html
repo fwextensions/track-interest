@@ -483,6 +483,9 @@
 		["The Fitzgerald", "a0W4U00000IYSM4UAP"],
 		["Ventana Residences", "a0W4U00000Ih1V2UAJ"],
 		["The George", "a0W4U00000KnCZRUA3"],
+		["Bayside Village Unit 8-120 1-129", "a0W4U00000NlYn3UAF"],
+		["Bayside Village Unit 8-203", "a0W4U00000NlTJxUAN"],
+		["Bayside Village Unit 4-210 04-208, 05-328", "a0W4U00000IYLReUAP"],
 	];
 	const buildingEl = document.getElementById("building-name");
 	const responseEl = document.getElementById("response");
@@ -490,7 +493,7 @@
 	const whatToExpectEl = document.getElementById("what-to-expect");
 	const params = Object.fromEntries(new URLSearchParams(location.search));
 	const isYes = params.r === "y";
-	const [buildingName, buildingID] = Buildings[params.b];
+	const [buildingName, buildingID] = Buildings[params.b.split(",")[0]];
 
 	if (buildingEl && responseEl) {
 		buildingEl.innerText = buildingName;

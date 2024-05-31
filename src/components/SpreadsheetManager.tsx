@@ -7,6 +7,14 @@ import {
 	OutputRow,
 } from "@/data/spreadsheet";
 
+function link(
+	token1: string,
+	token2: string = "")
+{
+	return `/api/resp/${token1}${token2}`;
+//	return `https://housing.sfgov.org/api/v1/trk?t=${token}`;
+}
+
 type Props = {
 	sentDate: string;
 	dueDate: string;
@@ -58,25 +66,32 @@ export default function SpreadsheetManager({
 					Download Tokens
 				</button>}
 			<ul className={styles.applicantList}>
-				{renderedRows.map(({ APPMEM_EMAIL, LISTING_NAME, Building, YesLink, NoLink }, i) => (
-					<li key={i}>
-						{APPMEM_EMAIL} <strong title={LISTING_NAME}>bldg: {Building}</strong>
-						<a
-							href={YesLink}
-							title={YesLink}
-							target="_blank"
-						>
-							<strong>Yes</strong>
-						</a>
-						<a
-							href={NoLink}
-							title={NoLink}
-							target="_blank"
-						>
-							<strong>No</strong>
-						</a>
-					</li>
-				))}
+				{renderedRows.map((row, i) => {
+					const { APPMEM_EMAIL, LISTING_NAME, Buildings, YesToken1, YesToken2, NoToken1, NoToken2 } = row;
+					const yesLink = link(YesToken1, YesToken2);
+					const noLink = link(NoToken1, NoToken2);
+
+					return (
+						<li key={i}>
+							{APPMEM_EMAIL}
+							<strong title={LISTING_NAME}>bldgs: {Buildings}</strong>
+							<a
+								href={yesLink}
+								title={yesLink}
+								target="_blank"
+							>
+								<strong>Yes</strong>
+							</a>
+							<a
+								href={noLink}
+								title={noLink}
+								target="_blank"
+							>
+								<strong>No</strong>
+							</a>
+						</li>
+					);
+				})}
 			</ul>
 		</>
 	);

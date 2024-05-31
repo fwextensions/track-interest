@@ -18,6 +18,9 @@ export const Buildings = [
 	["The Fitzgerald", "a0W4U00000IYSM4UAP"],
 	["Ventana Residences", "a0W4U00000Ih1V2UAJ"],
 	["The George", "a0W4U00000KnCZRUA3"],
+	["Bayside Village Unit 8-120 1-129", "a0W4U00000NlYn3UAF"],
+	["Bayside Village Unit 8-203", "a0W4U00000NlTJxUAN"],
+	["Bayside Village Unit 4-210 04-208, 05-328", "a0W4U00000IYLReUAP"],
 ];
 export const BuildingNumberByName: Record<string, number> = Buildings.reduce((result, [name], i) => ({
 	...result,

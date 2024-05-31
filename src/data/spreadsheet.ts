@@ -1,39 +1,44 @@
 import * as XLSX from "xlsx";
 import { createTokensForApplications } from "@/actions";
-import { BuildingNumberByName } from "@/app/constants";
+import { AppIDMap } from "@/app/types";
 
 type InputRow = {
 	APPMEM_FIRST_NAME: string;
 	APPMEM_LAST_NAME: string;
 	APPMEM_EMAIL: string;
-	APP_ID: string;
-	LISTING_ID: string;
+	APP_ID_6: string;
+	LISTING_ID_6: string;
+	APP_ID_7: string;
+	LISTING_ID_7: string;
+	APP_ID_8: string;
+	LISTING_ID_8: string;
 	LISTING_NAME: string;
 };
 export type OutputRow = InputRow & {
 	Name: string;
 	DueDate: string;
-	Building: number;
-	YesLink: string;
-	NoLink: string;
+	Buildings: string;
+	YesToken1: string;
+	YesToken2: string;
+	NoToken1: string;
+	NoToken2: string;
 };
 
 const InputColNames: Extract<keyof InputRow, string>[] = [
 	"APPMEM_FIRST_NAME",
 	"APPMEM_LAST_NAME",
 	"APPMEM_EMAIL",
-	"APP_ID",
-	"LISTING_ID",
+	"APP_ID_6",
+	"LISTING_ID_6",
+	"APP_ID_7",
+	"LISTING_ID_7",
+	"APP_ID_8",
+	"LISTING_ID_8",
 	"LISTING_NAME"
 ];
 const OutputSheet = "Tokens";
 const DuplicateSpacesPattern = /\s+/g;
-
-function link(
-	token: string)
-{
-	return `https://housing.sfgov.org/api/v1/trk?t=${token}`;
-}
+const MaxFieldLength = 250;
 
 function getRowsFromSpreadsheet(
 	data: ArrayBuffer)
@@ -66,14 +71,25 @@ export async function getOutputFromSpreadsheet(
 		// create new row objects with only keys that are in InputRow
 	const rows = getRowsFromSpreadsheet(fileData)
 		.map((row) => InputColNames.reduce((o, k) => ({ ...o, [k]: row[k] }), {} as InputRow));
-	const applications = rows.map(({ APP_ID, LISTING_NAME }): [string, number] => {
-		const building = BuildingNumberByName[LISTING_NAME];
+	const applications: [AppIDMap, string][] = rows.map((row) => {
+		const buildings: string[] = [];
+		const appIDs = Object.entries(row).filter(([key]) => key.startsWith("APP_ID"));
+		const appIDMap = appIDs.reduce((result: AppIDMap, [key, value]) => {
+			const building = key.slice(-1);
 
-		return [APP_ID, building];
+			if (value) {
+				result[building] = value;
+				buildings.push(building);
+			}
+
+			return result;
+		}, {});
+
+		return [appIDMap, buildings.join(",")];
 	});
 	const tokens = await createTokensForApplications(applications, sentDate, expDate);
 
-	return tokens.map(([[_, building], YesToken, NoToken], i) => {
+	return tokens.map(([Buildings, YesToken, NoToken], i) => {
 		const row = rows[i];
 		const Name = (row.APPMEM_FIRST_NAME + " " + row.APPMEM_LAST_NAME).replace(DuplicateSpacesPattern, " ");
 
@@ -81,9 +97,11 @@ export async function getOutputFromSpreadsheet(
 			...row,
 			Name,
 			DueDate: dueDate,
-			Building: building,
-			YesLink: link(YesToken),
-			NoLink: link(NoToken),
+			Buildings,
+			YesToken1: YesToken.slice(0, MaxFieldLength),
+			YesToken2: YesToken.slice(MaxFieldLength),
+			NoToken1: NoToken.slice(0, MaxFieldLength),
+			NoToken2: NoToken.slice(MaxFieldLength),
 		};
 	});
 }
